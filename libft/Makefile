@@ -6,7 +6,7 @@
 #    By: mtoia <mtoia@student.42roma.it>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/16 15:22:00 by ohassyao          #+#    #+#              #
-#    Updated: 2023/01/14 11:56:41 by mtoia            ###   ########.fr        #
+#    Updated: 2024/08/19 18:22:42 by mtoia            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,6 +28,9 @@ SRC = ft_atoi.c ft_bzero.c ft_calloc.c \
 	ft_lstclear.c ft_lstiter.c ft_lstmap.c \
 	ft_matrixfree.c ft_matrixdup.c ft_matrixlen.c ft_matrixextend.c \
 	get_next_line.c ft_printf.c ft_printf_utility.c \
+
+
+CC = clang -g
 
 OBJ	=	$(SRC:.c=.o)
 

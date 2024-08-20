@@ -6,7 +6,7 @@
 /*   By: mtoia <mtoia@student.42roma.it>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 16:17:59 by mtoia             #+#    #+#             */
-/*   Updated: 2024/08/16 18:05:39 by mtoia            ###   ########.fr       */
+/*   Updated: 2024/08/19 20:05:43 by mtoia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,9 @@ struct optionStruct
 	int     reverse;		// -r option
 	int     show_all;		// -a option
 	char   *path;			// path
+	char	**to_expand;	// Matrix of subdir to expand if -R flag
+	int 	flag;
+	t_list  *head;			// list of files
 	// char   **res;			// Array of results to print // not used
 }; extern struct optionStruct op;
 
@@ -39,6 +42,6 @@ struct optionStruct
 int ft_getopt(int argc, char *const argv[], const char *optstring);
 int no_option(char *path, DIR *dir);
 //mtl variable is used to check if there 2 or more path given
-int run(int mlt);  // run function
+int run(int mlt, char *tmp);  // run function
 
 #endif
