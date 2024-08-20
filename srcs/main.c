@@ -6,7 +6,7 @@
 /*   By: mtoia <mtoia@student.42roma.it>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 11:24:44 by mtoia             #+#    #+#             */
-/*   Updated: 2024/08/16 18:12:29 by mtoia            ###   ########.fr       */
+/*   Updated: 2024/08/19 21:17:12 by mtoia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,29 +144,46 @@
 //     return 0;
 // }
 
+void print_5_bits(int num) {
+    int mask = 0b11111; // Mask to extract the 5 least significant bits
+    int bits = num & mask; // Extract the 5 bits
+
+    for (int i = 4; i >= 0; i--) {
+        int bit = (bits >> i) & 1; // Extract the i-th bit
+        printf("%d", bit);
+    }
+    printf("\n");
+}
+
 
 int main(int argc, char **argv)
 {
 	int opt;
-
+	op.flag = 0;
+	op.head = NULL;
 	while ((opt = ft_getopt(argc, argv, "lRart")) != -1)
 	{
 		switch (opt)
 		{
 		case 'l':
 			op.long_format = 1;
+			op.flag |= OPT_LONG_FORMAT;
 			break;
 		case 'R':
 			op.recursive = 1;
+			op.flag |= OPT_RECURSIVE;
 			break;
 		case 'a':
 			op.show_all = 1;
+			op.flag |= OPT_SHOW_ALL;
 			break;
 		case 'r':
 			op.reverse = 1;
+			op.flag |= OPT_REVERSE;
 			break;
 		case 't':
 			op.sort_time = 1;
+			op.flag |= OPT_SORT_TIME;
 			break;
 		default:
 			exit(EXIT_FAILURE);
@@ -180,15 +197,15 @@ int main(int argc, char **argv)
 		op.path = ".";
 	}
 	else
-	{
-		
+	{		
 		for (int i = op.my_optind; i < argc; i++)
-		{
+		{				
 			op.path = argv[i];
-			run(i);
+			run(i, op.path);
 		}
 		return (0);
 	}
 	printf("Resutl: %d %d %d %d %d\n", op.long_format, op.recursive, op.show_all, op.reverse, op.sort_time);
-	run(0);
+	print_5_bits(op.flag);
+	run(0, op.path);
 }
