@@ -73,6 +73,7 @@ void		ft_lstadd_back(t_list **lst, t_list *n);
 void		ft_lstdelone(t_list *lst, void (*del)(void *));
 void		ft_lstclear(t_list **lst, void (*del)(void *));
 void		ft_lstiter(t_list *lst, void (*f)(void *));
+void		ft_sort(void *base, size_t nmemb, size_t size, int (*compar)(const void *, const void *));
 t_list		*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
 int			ft_matrixlen(char **m);
 void		ft_matrixfree(char ***m);
@@ -86,5 +87,7 @@ int			ft_putstr(char *str);
 int			ft_putnbr(int nb);
 int			ft_putnbr_uns(unsigned int nb);
 int			ft_hexa(unsigned int nb, char c);
+int			ft_strcasecmp(const char *s1, const char *s2);
+
 
 #endif

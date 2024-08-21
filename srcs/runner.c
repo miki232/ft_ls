@@ -262,27 +262,31 @@ char **print_list(char **arr, char **to_expand) {
     return to_expand;
 }
 
-// Comparison function for normal order
-// Comparison function for reverse order (case-insensitive)
 int compare_reverse(const void *a, const void *b) {
     const char *str1 = *(const char **)a;
     const char *str2 = *(const char **)b;
-    return strcasecmp(str2, str1);
+    return ft_strcasecmp(str2, str1);
 }
 
-// Comparison function for normal order (case-insensitive)
 int compare_normal(const void *a, const void *b) {
     const char *str1 = *(const char **)a;
     const char *str2 = *(const char **)b;
-    return strcasecmp(str1, str2);
+    return ft_strcasecmp(str1, str2);
 }
 
 char **sort_array(char **arr) {
+    // clock_t start , end;
+    // double cpu_time_used;
+    //
+    // start = clock();
     if (op.flag & OPT_REVERSE) {
-        qsort(arr, array_length(arr), sizeof(char *), compare_reverse);
+        ft_sort(arr, array_length(arr), sizeof(char *), compare_reverse);
     } else {
-        qsort(arr, array_length(arr), sizeof(char *), compare_normal);
+        ft_sort(arr, array_length(arr), sizeof(char *), compare_normal);
     }
+    // end = clock();
+    // cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    // printf("Time taken to sort the array: %f\n", cpu_time_used);
     return arr;
 }
 
