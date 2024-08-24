@@ -11,7 +11,7 @@ CC = clang
 
 OBJ	=  $(SRC:.c=.o)
 
-FLAGS = -g #-Wall -Wextra -Werror
+FLAGS = -g # -fsanitize=address
 
 %.o: %.c 
 	@$(CC) $(FLAGS) -c $< -o $@
