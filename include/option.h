@@ -35,6 +35,7 @@ struct optionStruct
 	char	**to_expand;	// Matrix of subdir to expand if -R flag
 	int 	flag;
 	int		size_width;		// width of the size column
+	int		layer;			// layer of the recursion
 	t_list  *head;			// list of files
 	// char   **res;			// Array of results to print // not used
 }; extern struct optionStruct op;

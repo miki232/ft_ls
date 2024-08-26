@@ -195,6 +195,9 @@ int main(int argc, char **argv)
 	if (op.my_optind >= argc)
 	{
 		op.path = ".";
+		run(0, op.path);
+		if (!op.flag)
+			ft_printf("\n");
 	}
 	else
 	{		
@@ -205,7 +208,5 @@ int main(int argc, char **argv)
 		}
 		return (0);
 	}
-	printf("Resutl: %d %d %d %d %d\n", op.long_format, op.recursive, op.show_all, op.reverse, op.sort_time);
-	print_5_bits(op.flag);
-	run(0, op.path);
+	// print_5_bits(op.flag);
 }

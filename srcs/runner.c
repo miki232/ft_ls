@@ -48,6 +48,14 @@ int ft_long_format(char *src) {
         perror("lstat");
         return 0;
     }
+    if (S_ISLNK(sb.st_mode)) {
+        link_len = readlink(path, link_target, sizeof(link_target));
+        if (link_len == -1) {
+            perror("readlink");
+            return 0;
+        }
+        link_target[link_len] = '\0';
+    }
     free(path);
     ft_printf("%s", (S_ISDIR(sb.st_mode)) ? "d" : (S_ISLNK(sb.st_mode)) ? "l" : "-");
     ft_printf("%s", (sb.st_mode & S_IRUSR) ? "r" : "-");
@@ -66,6 +74,9 @@ int ft_long_format(char *src) {
     gr = getgrgid(sb.st_gid);
     ft_printf(" %s %s", pw->pw_name, gr->gr_name);
     int space = op.size_width - ft_space_cnt((int)sb.st_size);
+    if ((int)sb.st_size == 0) {
+        space--;
+    }
     for (int i = 0; i <= space; i++) {
         ft_printf(" ");
     }
@@ -78,7 +89,11 @@ int ft_long_format(char *src) {
     char *hour = ft_substr(time_str, 11, 2);
     char *minute = ft_substr(time_str, 14, 2);
     ft_printf(" %s %s %s:%s", month, day, hour, minute);
-    ft_printf(" %s\n", src);
+    char *color = (S_ISDIR(sb.st_mode)) ? "\033[1;34m" : (S_ISLNK(sb.st_mode)) ? "\033[1;36m" : "";
+    ft_printf(" %s", src);
+    if (S_ISLNK(sb.st_mode))
+        ft_printf(" -> %s", link_target);
+    ft_printf("\n");
     free(month);
     free(day);
     free(hour);
@@ -178,25 +193,25 @@ char **print_list(char **arr, char **to_expand) {
     calculate_size_long_format(arr);
 
     while (arr[i]) {
-        if (i == 32) {
-            ft_putstr("\n");
-        }
-        if (op.flag & OPT_SHOW_ALL) {
+        if (op.flag & OPT_SHOW_ALL)
+        {
             if (op.flag & OPT_LONG_FORMAT)
                 ft_long_format(arr[i]);
             else
-                ft_printf("%s  ", arr[i]);
+                ft_printf("%s%s", arr[i], (arr[i + 1]) ? "  " : "");
         }
-        else if (compare(arr[i], ".") == 0) {
-
+        else if (compare(arr[i], ".") == 0)
+        {
             if (op.flag & OPT_LONG_FORMAT) {
                 ft_long_format(arr[i]);
             }
             else
-                ft_printf("%s  ", arr[i]);
+                ft_printf("%s%s", arr[i], (arr[i + 1]) ? "  " : "");
         }
-        if (strcmp(arr[i], ".") != 0 && strcmp(arr[i], "..") != 0) {
-            if (op.flag & OPT_RECURSIVE && (content_copy = is_dir(arr[i])) != NULL) {
+        if (strcmp(arr[i], ".") != 0 && strcmp(arr[i], "..") != 0)
+        {
+            if (op.flag & OPT_RECURSIVE && (content_copy = is_dir(arr[i])) != NULL)
+            {
                 char **temp = copy_to_temp(to_expand);
                 ft_matrixfree(&to_expand);
                 to_expand = ft_matrixextend(temp, content_copy);
@@ -310,7 +325,6 @@ int run(int mlt, char *tmp) {
         free(arr[i]);
     }
     free(arr);
-    ft_printf("!\n!\n");
     if (to_expand != NULL && op.flag & OPT_RECURSIVE) {
         for (int i = 0; to_expand[i] != NULL; i++) {
 
