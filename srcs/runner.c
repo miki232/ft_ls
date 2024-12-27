@@ -35,6 +35,39 @@ int ft_space_cnt(int n) {
     return count;
 }
 
+int calculate_total_blocks(char *dir_path) {
+    DIR *dir;
+    struct dirent *entry;
+    struct stat sb;
+    long total = 0;
+    char *path;
+
+    dir = opendir(dir_path);
+    if (dir == NULL)
+    {
+        perror("opendir");
+        return -1;
+    }
+
+    while ((entry = readdir(dir)) != NULL)
+    {
+        if (entry->d_name[0] == '.' && !op.show_all)
+            continue;
+
+        path = ft_strjoin(dir_path, "/");
+        char *full_path = ft_strjoin(path, entry->d_name);
+        free(path);
+
+        if (lstat(full_path, &sb) == 0) {
+            total += sb.st_blocks;
+        }
+        free(full_path);
+    }
+
+    closedir(dir);
+    return total / 2;  // Divide by 2 to match ls output (512-byte blocks to 1024-byte blocks)
+}
+
 int ft_long_format(char *src) {
     struct stat sb;
     struct passwd *pw;
@@ -93,7 +126,6 @@ int ft_long_format(char *src) {
     ft_printf(" %s", src);
     if (S_ISLNK(sb.st_mode))
         ft_printf(" -> %s", link_target);
-    ft_printf("\n");
     free(month);
     free(day);
     free(hour);
@@ -102,21 +134,45 @@ int ft_long_format(char *src) {
     return 1;
 }
 
+char *path_maker(char *basepath, char *filename) {
+    char *path;
+    if ((basepath[strlen(basepath) - 1] == '/' || basepath[strlen(basepath) - 1] == '.') && filename[0] == '/') {
+        if (ft_strlen(filename) > 1) {
+            path = ft_strjoin(basepath, filename + 1);
+        } else {
+            path = ft_strdup(basepath);
+        }
+    }
+    else if (basepath[strlen(basepath) - 1] == '/') {
+        path = ft_strjoin(basepath, filename);
+    } else {
+        if (filename[0] == '/') {
+            path = ft_strjoin(basepath, filename);
+        } else
+        {
+            char *tmp = ft_strjoin(basepath, "/");
+            path = ft_strjoin(tmp, filename);
+            free(tmp);
+        }
+    }
+    return path;
+}
+
 char *is_dir(char *path) {
     struct stat path_stat;
-    char *tmp1 = ft_strjoin(op.path, "/");
+
+    char *tmp1 = path_maker(op.path, "/");
     if (!tmp1) {
         perror("ft_strjoin");
         return NULL;
     }
-    char *tmp = ft_strjoin(tmp1, path);
+    char *tmp = path_maker(tmp1, path);
     free(tmp1);
     if (!tmp) {
         perror("ft_strjoin");
         return NULL;
     }
     if (stat(tmp, &path_stat) == -1) {
-        perror("stat");
         free(tmp);
         return NULL;
     }
@@ -153,6 +209,9 @@ char **copy_to_temp(char **to_expand) {
     return temp;
 }
 
+void error_handler(char *path) {
+    ft_printf("ft_ls: cannot access '%s': %s", path, strerror(errno));
+}
 
 
 void calculate_size_long_format(char **arr) {
@@ -168,7 +227,9 @@ void calculate_size_long_format(char **arr) {
         char *path = ft_strjoin(tmp, arr[i]);
         free(tmp);
         if (lstat(path, &sb) == -1) {
-            perror("lstat");
+            error_handler(path);
+            ft_printf("\n");
+            free(path);
             return ;
         }
         free(path);
@@ -191,18 +252,24 @@ char **print_list(char **arr, char **to_expand) {
     int i = 0;
     char *content_copy = NULL;
     calculate_size_long_format(arr);
-
+    if (op.flag & OPT_LONG_FORMAT) {
+        ft_printf("total %d", calculate_total_blocks(op.path));
+    }
     while (arr[i]) {
         if (op.flag & OPT_SHOW_ALL)
         {
             if (op.flag & OPT_LONG_FORMAT)
+            {
+                ft_printf("\n");
                 ft_long_format(arr[i]);
+            }
             else
                 ft_printf("%s%s", arr[i], (arr[i + 1]) ? "  " : "");
         }
         else if (compare(arr[i], ".") == 0)
         {
             if (op.flag & OPT_LONG_FORMAT) {
+                ft_printf("\n");
                 ft_long_format(arr[i]);
             }
             else
@@ -220,8 +287,12 @@ char **print_list(char **arr, char **to_expand) {
         }
         i++;
     }
+    if (op.flag)
+        ft_printf("\n");
     return to_expand;
 }
+
+//TODO fix the sorting algorithm When there is more than one file tha has the same time, it will be sorted by name
 
 int compare_reverse(const void *a, const void *b) {
     const char *str1 = *(const char **)a;
@@ -259,40 +330,68 @@ int compare_time(const void *a, const void *b) {
     return sb2.st_mtime - sb1.st_mtime;
 }
 
-char **sort_array(char **arr) {
-    // clock_t start , end;
-    // double cpu_time_used;
-    //
-    // start = clock();
-    if (op.flag & OPT_REVERSE) {
-        ft_sort(arr, array_length(arr), sizeof(char *), compare_reverse);
-    } else {
-        ft_sort(arr, array_length(arr), sizeof(char *), compare_normal);
+int compare_time_reverse(const void *a, const void *b) {
+    const char *str1 = *(const char **)a;
+    const char *str2 = *(const char **)b;
+    struct stat sb1;
+    struct stat sb2;
+    char *tmp1 = ft_strjoin(op.path, "/");
+    char *path1 = ft_strjoin(tmp1, str1);
+    free(tmp1);
+    if (lstat(path1, &sb1) == -1) {
+        perror("lstat");
+        return 0;
     }
+    free(path1);
+    char *tmp2 = ft_strjoin(op.path, "/");
+    char *path2 = ft_strjoin(tmp2, str2);
+    free(tmp2);
+    if (lstat(path2, &sb2) == -1) {
+        perror("lstat");
+        return 0;
+    }
+    free(path2);
+    return sb1.st_mtime - sb2.st_mtime;
+}
+
+char **sort_array(char **arr) {
+    int i = op.flag;
     if (op.flag & OPT_SORT_TIME) {
         ft_sort(arr, array_length(arr), sizeof(char *), compare_time);
+    }else {
+        ft_sort(arr, array_length(arr), sizeof(char *), compare_normal);
     }
-    // end = clock();
-    // cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-    // printf("Time taken to sort the array: %f\n", cpu_time_used);
+    if (op.flag & OPT_REVERSE && op.flag & OPT_SORT_TIME) {
+        ft_sort(arr, array_length(arr), sizeof(char *), compare_time_reverse);
+    } else
+    if (op.flag & OPT_REVERSE) {
+        ft_sort(arr, array_length(arr), sizeof(char *), compare_reverse);
+    }
     return arr;
 }
 
-int run(int mlt, char *tmp) {
+int run(int mlt, char *tmp, int argc) {
     struct dirent *s_entry;
     char **arr = NULL;
     op.path = tmp;
     char **to_expand = NULL;
     if (mlt >= 1) {
-        if (mlt > 2) {
+        if (mlt >= 2 && !op.flag) {
             ft_printf("\n%s:\n", tmp);
-        } else {
+        }
+        else if (argc >= 2) {
             ft_printf("%s:\n", tmp);
         }
+        else
+            ft_printf("%s:\n", tmp);
+
+    }
+    else if (op.flag & OPT_RECURSIVE) {
+        ft_printf("%s:\n", tmp);
     }
     DIR *dir = opendir(tmp);
     if (!dir) {
-        perror("opendir");
+        error_handler(tmp);
         return 1;
     }
     int count = 0;
@@ -327,8 +426,8 @@ int run(int mlt, char *tmp) {
     free(arr);
     if (to_expand != NULL && op.flag & OPT_RECURSIVE) {
         for (int i = 0; to_expand[i] != NULL; i++) {
-
-            run(1, to_expand[i]);
+            ft_printf("\n");
+            run(1, to_expand[i], 0);
         }
     }
     ft_matrixfree(&to_expand);

@@ -5,9 +5,9 @@ C_LGRN = \033[92m
 C_LMGN = \033[95m
 C_END = \033[0m
 
-SRC =   srcs/main.c srcs/option.c srcs/runner.c
+SRC =   srcs/main.c srcs/option.c srcs/runner.c utils/helpers.c
 
-CC = clang
+CC = gcc
 
 OBJ	=  $(SRC:.c=.o)
 

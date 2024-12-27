@@ -31,7 +31,7 @@ SRC = ft_atoi.c ft_bzero.c ft_calloc.c \
 	ft_sort.c ft_strcasecmp.c
 
 
-CC = clang -g
+CC = gcc -g
 
 OBJ	=	$(SRC:.c=.o)
 

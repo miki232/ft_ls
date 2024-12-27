@@ -155,7 +155,6 @@ void print_5_bits(int num) {
     printf("\n");
 }
 
-
 int main(int argc, char **argv)
 {
 	int opt;
@@ -195,18 +194,21 @@ int main(int argc, char **argv)
 	if (op.my_optind >= argc)
 	{
 		op.path = ".";
-		run(0, op.path);
-		if (!op.flag)
-			ft_printf("\n");
+		run(0, op.path, 0);
 	}
 	else
-	{		
+	{
+		char **path = sort_path_list(argc, op.my_optind, argv);
 		for (int i = op.my_optind; i < argc; i++)
-		{				
-			op.path = argv[i];
-			run(i, op.path);
+		{
+			op.path = path[i];
+			run(i, op.path, argc - op.my_optind);
+			if (need_extra_nline(i, argc))
+				ft_printf("\n");
 		}
-		return (0);
+		free(path);
 	}
+	if (!op.flag)
+		ft_printf("\n");
 	// print_5_bits(op.flag);
 }

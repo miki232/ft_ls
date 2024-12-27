@@ -44,6 +44,6 @@ struct optionStruct
 int ft_getopt(int argc, char *const argv[], const char *optstring);
 int no_option(char *path, DIR *dir);
 //mtl variable is used to check if there 2 or more path given
-int run(int mlt, char *tmp);  // run function
+int run(int mlt, char *tmp, int argc);  // run function
 
 #endif

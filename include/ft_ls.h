@@ -33,5 +33,9 @@
 #define OPT_REVERSE      0b01000
 #define OPT_SORT_TIME    0b10000
 
+int need_extra_nline(int i, int argc);
+int compare_normal(const void *a, const void *b);
+int compare_reverse(const void *a, const void *b);
+char** sort_path_list(int argc, int index, char **argv);
 
 #endif
