@@ -26,6 +26,7 @@ $(NAME): $(OBJ)
 
 clean:
 	@rm -f $(OBJ)
+	@make -C ./libft clean
 	@echo "$(C_LMGN)➜ [$(NAME)] Objects have been cleaned successfully !$(C_END)"
 
 fclean:

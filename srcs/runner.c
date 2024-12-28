@@ -172,7 +172,11 @@ char *is_dir(char *path) {
         perror("ft_strjoin");
         return NULL;
     }
-    if (stat(tmp, &path_stat) == -1) {
+    if (lstat(tmp, &path_stat) == -1) {
+        free(tmp);
+        return NULL;
+    }
+    if (S_ISLNK(path_stat.st_mode)) {
         free(tmp);
         return NULL;
     }
@@ -209,8 +213,13 @@ char **copy_to_temp(char **to_expand) {
     return temp;
 }
 
-void error_handler(char *path) {
-    ft_printf("ft_ls: cannot access '%s': %s", path, strerror(errno));
+void error_handler(char *path, char *error) {
+    char *tmp = strerror(errno);
+    if (strcmp(tmp, "Permission denied") == 0) {
+        ft_printf("ft_ls: cannot open directory %s: %s", path, tmp);
+        return ;
+    }
+    ft_printf("ft_ls: cannot access '%s': %s", path, tmp);
 }
 
 
@@ -227,7 +236,7 @@ void calculate_size_long_format(char **arr) {
         char *path = ft_strjoin(tmp, arr[i]);
         free(tmp);
         if (lstat(path, &sb) == -1) {
-            error_handler(path);
+            error_handler(path, NULL);
             ft_printf("\n");
             free(path);
             return ;
@@ -264,7 +273,12 @@ char **print_list(char **arr, char **to_expand) {
                 ft_long_format(arr[i]);
             }
             else
-                ft_printf("%s%s", arr[i], (arr[i + 1]) ? "  " : "");
+            {
+                if (op.raw == 1)
+                    ft_printf("%s%s", arr[i], (arr[i + 1]) ? "  " : "");
+                else
+                    ft_printf("%s%s", arr[i], (arr[i + 1]) ? "\n" : "");
+            }
         }
         else if (compare(arr[i], ".") == 0)
         {
@@ -273,7 +287,12 @@ char **print_list(char **arr, char **to_expand) {
                 ft_long_format(arr[i]);
             }
             else
-                ft_printf("%s%s", arr[i], (arr[i + 1]) ? "  " : "");
+            {
+                if (op.raw == 1)
+                    ft_printf("%s%s", arr[i], (arr[i + 1]) ? "  " : "");
+                else
+                    ft_printf("%s%s", arr[i], (arr[i + 1]) ? "\n" : "");
+            }
         }
         if (strcmp(arr[i], ".") != 0 && strcmp(arr[i], "..") != 0)
         {
@@ -291,8 +310,6 @@ char **print_list(char **arr, char **to_expand) {
         ft_printf("\n");
     return to_expand;
 }
-
-//TODO fix the sorting algorithm When there is more than one file tha has the same time, it will be sorted by name
 
 int compare_reverse(const void *a, const void *b) {
     const char *str1 = *(const char **)a;
@@ -382,7 +399,7 @@ int run(int mlt, char *tmp, int argc) {
         else if (argc >= 2) {
             ft_printf("%s:\n", tmp);
         }
-        else
+        else if (op.flag & OPT_RECURSIVE)
             ft_printf("%s:\n", tmp);
 
     }
@@ -391,7 +408,7 @@ int run(int mlt, char *tmp, int argc) {
     }
     DIR *dir = opendir(tmp);
     if (!dir) {
-        error_handler(tmp);
+        error_handler(tmp, "open directory");
         return 1;
     }
     int count = 0;

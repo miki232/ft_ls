@@ -160,6 +160,7 @@ int main(int argc, char **argv)
 	int opt;
 	op.flag = 0;
 	op.head = NULL;
+	op.raw = isatty(STDOUT_FILENO);
 	while ((opt = ft_getopt(argc, argv, "lRart")) != -1)
 	{
 		switch (opt)

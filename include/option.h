@@ -37,6 +37,7 @@ struct optionStruct
 	int		size_width;		// width of the size column
 	int		layer;			// layer of the recursion
 	t_list  *head;			// list of files
+	int		raw;			// raw output
 	// char   **res;			// Array of results to print // not used
 }; extern struct optionStruct op;
 
