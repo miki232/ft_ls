@@ -18,7 +18,24 @@
 #include <dirent.h>
 
 
-#define Option() (struct optionStruct){1, NULL, 1, 0}
+#define Option() (struct optionStruct){ \
+	.my_optind = 1,     \
+	.my_optarg = NULL,  \
+	.my_opterr = 1,     \
+	.my_optopt = 0,     \
+	.long_format = 0,   \
+	.recursive = 0,     \
+	.sort_time = 0,     \
+	.reverse = 0,       \
+	.show_all = 0,      \
+	.path = NULL,       \
+	.to_expand = NULL,  \
+	.flag = 0,          \
+	.size_width = 0,    \
+	.layer = 0,         \
+	.head = NULL,       \
+	.raw = 0           \
+}
 
 struct optionStruct
 {

@@ -5,13 +5,14 @@ C_LGRN = \033[92m
 C_LMGN = \033[95m
 C_END = \033[0m
 
-SRC =   srcs/main.c srcs/option.c srcs/runner.c utils/helpers.c
+SRC =   srcs/main.c srcs/option.c srcs/runner.c \
+		utils/debug.c utils/error.c utils/helpers.c utils/memory.c utils/sort.c utils/color.c \
 
 CC = gcc
 
 OBJ	=  $(SRC:.c=.o)
 
-FLAGS = -g # -fsanitize=address
+FLAGS = -g
 
 %.o: %.c 
 	@$(CC) $(FLAGS) -c $< -o $@
