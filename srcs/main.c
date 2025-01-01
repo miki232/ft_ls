@@ -70,6 +70,9 @@ int main(int argc, char **argv)
  		ft_printf("\n");
  	// print_5_bits(op.flag);
  }
+//TODO RIFARE LA FUNZIONE get_opt fare in modo che funzioni anche con "srcs/ -l" e non solo con "-l srcs/"
+// puo essere un idea> fare un sort che mette in cima le opzioni e poi i path
+//
 // int main(int argc, char **argv)
 // {
 //     int opt;
