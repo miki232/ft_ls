@@ -12,6 +12,72 @@
 //
 #include "../include/ft_ls.h"
 
+int ft_detail_symlink(char *src) {
+    struct stat sb;
+    struct passwd *pw;
+    struct group *gr;
+    char link_target[1024];
+    ssize_t link_len;
+    if (lstat(src, &sb) == -1) {
+        perror("lstat");
+        return 0;
+    }
+    if (S_ISLNK(sb.st_mode)) {
+        link_len = readlink(src, link_target, sizeof(link_target));
+        if (link_len == -1) {
+            perror("readlink");
+            return 0;
+        }
+        link_target[link_len] = '\0';
+    };
+    ft_printf("%s", (S_ISDIR(sb.st_mode)) ? "d" : (S_ISLNK(sb.st_mode)) ? "l" : "-");
+    ft_printf("%s", (sb.st_mode & S_IRUSR) ? "r" : "-");
+    ft_printf("%s", (sb.st_mode & S_IWUSR) ? "w" : "-");
+    ft_printf("%s", (sb.st_mode & S_IXUSR) ? "x" : "-");
+    ft_printf("%s", (sb.st_mode & S_IRGRP) ? "r" : "-");
+    ft_printf("%s", (sb.st_mode & S_IWGRP) ? "w" : "-");
+    ft_printf("%s", (sb.st_mode & S_IXGRP) ? "x" : "-");
+    ft_printf("%s", (sb.st_mode & S_IROTH) ? "r" : "-");
+    ft_printf("%s", (sb.st_mode & S_IWOTH) ? "w" : "-");
+    ft_printf("%s", (sb.st_mode & S_IXOTH) ? "x" : "-");
+
+    ft_printf(" %d", sb.st_nlink);
+
+    pw = getpwuid(sb.st_uid);
+    gr = getgrgid(sb.st_gid);
+    ft_printf(" %s %s", pw->pw_name, gr->gr_name);
+    int space = op.size_width - ft_space_cnt((int)sb.st_size);
+    if ((int)sb.st_size == 0) {
+        space--;
+    }
+    for (int i = 0; i <= space; i++) {
+        ft_printf(" ");
+    }
+    ft_printf("%d", (int)sb.st_size);
+
+    char *time_str = ctime(&sb.st_mtime);
+    time_str[strlen(time_str) - 1] = '\0';
+    char *month = ft_substr(time_str, 4, 3);
+    char *day = ft_substr(time_str, 8, 2);
+    char *hour = ft_substr(time_str, 11, 2);
+    char *minute = ft_substr(time_str, 14, 2);
+    ft_printf(" %s %s %s:%s", month, day, hour, minute);
+    if (op.raw == 1) {
+        ft_printf(" %s%s%s", ft_get_color(src, &sb), src, RESET);
+    }
+    else {
+        ft_printf(" %s", src);
+    }
+    if (S_ISLNK(sb.st_mode))
+        ft_printf(" -> %s\n", link_target);
+    free(month);
+    free(day);
+    free(hour);
+    free(minute);
+
+    return 1;
+}
+
 int ft_long_format(char *src) {
     struct stat sb;
     struct passwd *pw;
@@ -66,7 +132,12 @@ int ft_long_format(char *src) {
     char *hour = ft_substr(time_str, 11, 2);
     char *minute = ft_substr(time_str, 14, 2);
     ft_printf(" %s %s %s:%s", month, day, hour, minute);
-    ft_printf(" %s%s%s", ft_get_color(src, &sb), src, RESET);
+    if (op.raw == 1) {
+        ft_printf(" %s%s%s", ft_get_color(src, &sb), src, RESET);
+    }
+    else {
+        ft_printf(" %s", src);
+    }
     if (S_ISLNK(sb.st_mode))
         ft_printf(" -> %s", link_target);
     free(month);
@@ -153,6 +224,17 @@ int run(int mlt, char *tmp, int argc) {
     }
     else if (op.flag & OPT_RECURSIVE) {
         ft_printf("%s:\n", tmp);
+    }
+    if (op.flag & OPT_LONG_FORMAT) {
+        struct stat sb;
+        if (lstat(tmp, &sb) == -1) {
+            perror("lstat");
+            return 0;
+        }
+        if (S_ISLNK(sb.st_mode)) {
+            ft_detail_symlink(tmp);
+            return 1;
+        }
     }
     int count = 0;
     while ((s_entry = readdir(dir)) != NULL) {

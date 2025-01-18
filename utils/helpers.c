@@ -171,3 +171,62 @@ void calculate_size_long_format(char **arr) {
     }
     op.size_width = max;
 }
+
+
+char **rearrange_argv(int *argc, char **argv) {
+    char **new_argv = (char **)malloc((*argc + 1) * sizeof(char *));
+    if (!new_argv) {
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
+
+    int new_argc = 0;
+    int i, j;
+    char flags[256] = {0};
+
+    // Copy the program name
+    new_argv[new_argc++] = strdup(argv[0]);
+
+    // Collect all flags
+    for (i = 1; i < *argc; i++) {
+        if (argv[i][0] == '-' && argv[i][1] != '\0') {
+            for (j = 1; argv[i][j] != '\0'; j++) {
+                if (!strchr(flags, argv[i][j])) {
+                    strncat(flags, &argv[i][j], 1);
+                }
+            }
+        }
+    }
+
+    // Add collected flags as a single argument
+    if (flags[0] != '\0') {
+        char *flag_arg = (char *)malloc((strlen(flags) + 2) * sizeof(char));
+        if (!flag_arg) {
+            // Clean up before exit
+            for (i = 0; i < new_argc; i++) {
+                free(new_argv[i]);
+            }
+            free(new_argv);
+            perror("malloc");
+            exit(EXIT_FAILURE);
+        }
+        flag_arg[0] = '-';
+        strcpy(flag_arg + 1, flags);
+        new_argv[new_argc++] = flag_arg;
+    }
+
+    // Add non-flag arguments
+    for (i = 1; i < *argc; i++) {
+        if (!(argv[i][0] == '-' && argv[i][1] != '\0')) {
+            new_argv[new_argc++] = strdup(argv[i]);
+        }
+    }
+
+    *argc = new_argc;
+    new_argv[new_argc] = NULL;
+
+    // Remove the lines that free argv
+    // DO NOT free the original argv
+
+    return new_argv;
+}

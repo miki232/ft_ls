@@ -18,7 +18,8 @@ int main(int argc, char **argv)
  	op.flag = 0;
  	op.head = NULL;
  	op.raw = isatty(STDOUT_FILENO);
- 	while ((opt = ft_getopt(argc, argv, "lRart")) != -1)
+	char **newargv = rearrange_argv(&argc, argv);
+ 	while ((opt = ft_getopt(argc, newargv, "lRart")) != -1)
  	{
  		switch (opt)
  		{
@@ -56,9 +57,12 @@ int main(int argc, char **argv)
  	}
  	else
  	{
- 		char **path = sort_path_list(argc, op.my_optind, argv);
+ 		char **path = sort_path_list(argc, op.my_optind, newargv);
  		for (int i = op.my_optind; i < argc; i++)
  		{
+ 			if (path[i] == NULL) {
+ 				continue;
+ 			}
  			op.path = path[i];
  			run(i, op.path, argc - op.my_optind);
  			if (need_extra_nline(i, argc))
@@ -66,7 +70,12 @@ int main(int argc, char **argv)
  		}
  		free(path);
  	}
- 	if (!op.flag)
+ 	for (int i = 0; i < argc; i++) {
+ 		free(newargv[i]);
+ 	}
+ 	free(newargv);
+
+	if (!op.flag)
  		ft_printf("\n");
  	// print_5_bits(op.flag);
  }
