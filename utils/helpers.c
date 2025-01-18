@@ -138,6 +138,16 @@ char *is_dir(char *path) {
     return NULL;
 }
 
+int is_file(const char *src) {
+    struct stat sb;
+
+    if (stat(src, &sb) == 0 && S_ISREG(sb.st_mode)) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
 void calculate_size_long_format(char **arr) {
     int i = 0;
     int max = 0;

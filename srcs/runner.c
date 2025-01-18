@@ -209,6 +209,10 @@ int run(int mlt, char *tmp, int argc) {
     char **to_expand = NULL;
     DIR *dir = opendir(tmp);
     if (!dir) {
+        if (is_file(tmp)) {
+            ft_printf("%s%s%s", ft_get_color(tmp, NULL), tmp, RESET);
+            return 0;
+        }
         error_handler(tmp, "open directory");
         return 1;
     }

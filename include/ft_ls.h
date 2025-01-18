@@ -57,6 +57,7 @@ int compare_normal(const void *a, const void *b);
 int compare_reverse(const void *a, const void *b);
 char *ft_get_color(const char *src, struct stat *sb_ptr);
 char **rearrange_argv(int *argc, char **argv);
+int is_file(const char *src);
 
 //Debug functions
 void print_5_bits(int num);
