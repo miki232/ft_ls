@@ -28,7 +28,7 @@ SRC = ft_atoi.c ft_bzero.c ft_calloc.c \
 	ft_lstclear.c ft_lstiter.c ft_lstmap.c \
 	ft_matrixfree.c ft_matrixdup.c ft_matrixlen.c ft_matrixextend.c \
 	get_next_line.c ft_printf.c ft_printf_utility.c \
-	ft_sort.c ft_strcasecmp.c
+	ft_sort.c ft_strcasecmp.c ft_fdprintf.c
 
 
 CC = gcc -g

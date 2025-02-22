@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../include/ft_ls.h"
+#include "../libft/libft.h"
 struct optionStruct op = Option();
 
 
@@ -39,7 +40,7 @@ int ft_getopt(int argc, char *const argv[], const char *optstring) {
     if (optchar == NULL) {
         // Option not found
         if (op.my_opterr) {
-            fprintf(stderr, "Unknown option: -%c\n", op.my_optopt);
+            ft_fdprintf(STDERR_FILENO, "Unknown option: -%c\n", op.my_optopt);
         }
         opt_pos++;
         if (argv[op.my_optind][opt_pos] == '\0') {

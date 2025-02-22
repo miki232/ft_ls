@@ -60,10 +60,11 @@ char		*ft_strtrim(char const *s1, char const *set);
 char		*ft_itoa(int nb);
 char		*ft_strmapi(const char *s, char (*f)(unsigned int, char));
 void		ft_striteri(char *s, void (*f)(unsigned int, char *));
-void		ft_putchar_fd(char c, int fd);
-void		ft_putstr_fd(char *s, int fd);
+int		ft_putchar_fd(char c, int fd);
+int		ft_putstr_fd(char *s, int fd);
+int	ft_hexa_fd(unsigned int nb, char c, int fd);
 void		ft_putendl_fd(char *s, int fd);
-void		ft_putnbr_fd(int n, int fd);
+int		ft_putnbr_fd(int n, int fd);
 char		**ft_split(char const *s, char c);
 t_list		*ft_lstnew(void *content);
 void		ft_lstadd_front(t_list **lst, t_list *n);
@@ -88,6 +89,6 @@ int			ft_putnbr(int nb);
 int			ft_putnbr_uns(unsigned int nb);
 int			ft_hexa(unsigned int nb, char c);
 int			ft_strcasecmp(const char *s1, const char *s2);
-
+int			ft_fdprintf(int fd, const char *str, ...);
 
 #endif

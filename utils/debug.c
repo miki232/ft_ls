@@ -10,7 +10,7 @@ void print_5_bits(int num) {
 
     for (int i = 4; i >= 0; i--) {
         int bit = (bits >> i) & 1; // Extract the i-th bit
-        printf("%d", bit);
+        ft_printf("%d", bit);
     }
-    printf("\n");
+    ft_printf("\n");
 }

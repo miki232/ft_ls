@@ -102,3 +102,45 @@ int	ft_hexa(unsigned int nb, char c)
 	}
 	return (i);
 }
+
+int	ft_hexa_fd(unsigned int nb, char c, int fd)
+{
+	int		i;
+	char	*s;
+
+	i = 0;
+	if (nb < 16)
+	{
+		if (c == 'x')
+		{
+			s = "0123456789abcdef";
+			i += ft_putchar_fd(s[nb], fd);
+		}
+		else if (c == 'X')
+		{
+			s = "0123456789ABCDEF";
+			i += ft_putchar_fd(s[nb], fd);
+		}
+	}
+	else
+	{
+		i += ft_hexa_fd((nb / 16), c, fd);
+		i += ft_hexa_fd((nb % 16), c, fd);
+	}
+	return (i);
+}
+
+int	ft_putnbr_uns_fd(unsigned int nb, int fd)
+{
+	int	i;
+
+	i = 0;
+	if (nb < 10)
+		i += ft_putchar(nb + 48);
+	else
+	{
+		i += ft_putnbr(nb / 10);
+		i += ft_putnbr(nb % 10);
+	}
+	return (i);
+}
